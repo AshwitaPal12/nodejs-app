@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 
       - name: Setup Node.js version
         uses: actions/setup-node@v4
         with: 
@@ -20,8 +20,8 @@ jobs:
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v2
         with:
-          app-name: integrationninjas
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          app-name: githubaction-testing
+          publish-profile: ${{ secrets.TEST }}
           package: .       
 
               
