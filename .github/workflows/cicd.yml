@@ -1,0 +1,65 @@
+name: Deploy to Azure App Service
+
+on:
+  push:
+    branches:
+      - app-service-deployment
+
+jobs:
+
+#for DEV environment
+  build-and-deploy-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+      - name: Setup Node.js version
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - name: Install Dependencies
+        run: npm install
+      - name: Deploy to Azure App Service (Dev)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: githubaction-dev
+          publish-profile: ${{ secrets.DEV }}
+          package: .
+
+#for PROD environment
+  build-and-deploy-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+      - name: Setup Node.js version
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - name: Install Dependencies
+        run: npm install
+      - name: Deploy to Azure App Service (Prod)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: githubaction-prod
+          publish-profile: ${{ secrets.PROD }}
+          package: .
+
+#for non-prod environment
+  build-and-deploy-non-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+      - name: Setup Node.js version
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - name: Install Dependencies
+        run: npm install
+      - name: Deploy to Azure App Service (NON-PROD)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: githubaction-non-prod
+          publish-profile: ${{ secrets.NON-PROD }}
+          package: .
