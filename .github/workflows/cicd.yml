@@ -60,6 +60,6 @@ jobs:
       - name: Deploy to Azure App Service (NON-PROD)
         uses: azure/webapps-deploy@v2
         with:
-          app-name: githubaction-non-prod
+          app-name: githubaction-testing
           publish-profile: ${{ secrets.NONPROD }}
           package: .
