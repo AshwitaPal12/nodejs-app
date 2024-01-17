@@ -61,5 +61,5 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: githubaction-non-prod
-          publish-profile: ${{ secrets.NON-PROD }}
+          publish-profile: ${{ secrets.NONPROD }}
           package: .
