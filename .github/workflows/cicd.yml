@@ -9,9 +9,7 @@ on:
     types:
       - completed
 
-
 jobs:
-  
   build-and-deploy-prod:
     runs-on: ubuntu-latest
     needs: approval-prod
@@ -57,9 +55,6 @@ jobs:
         with:
           message: "Deployment to production environment approved and completed successfully."
 
-
-# Add the following section at the end of the workflow
-jobs:
   notification:
     runs-on: ubuntu-latest
     needs: build-and-deploy-prod
