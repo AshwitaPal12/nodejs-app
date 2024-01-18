@@ -1,4 +1,4 @@
-name: Deploy to Azure App Service
+name: Deploy to Azure App Service1
 
 
 on:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        environment: [prod, non-prod, dev]
+        environment: [non-prod]
 
 
     steps:
@@ -30,6 +30,6 @@ jobs:
         id: deploy
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ matrix.environment == 'prod' && 'githubaction-prod' || matrix.environment == 'non-prod' && 'githubaction-testing' || 'githubaction-dev' }}
-          publish-profile: ${{ matrix.environment == 'prod' && secrets.PROD || matrix.environment == 'non-prod' && secrets.NONPROD || secrets.DEV }}
+          app-name: ${{ matrix.environment == 'non-prod' && 'githubaction-testing' }}
+          publish-profile: ${{ matrix.environment == 'non-prod' && secrets.NONPROD }}
           package: .
