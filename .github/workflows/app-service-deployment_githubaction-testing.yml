@@ -216,3 +216,45 @@
 #         uses: enytc/github-action-google-chat-message@v2
 #         with:
 #           message: "Deployment to production environment has been initiated. Please review and approve on GitHub."
+
+
+
+
+
+
+
+
+
+
+
+name: Deploy to Azure App Service
+
+on:
+  push:
+    branches:
+      - app-service-deployment
+
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [prod, non-prod, dev]
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+      - name: Setup Node.js version
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - name: Install Dependencies
+        run: npm install
+      - name: Deploy to Azure App Service
+        id: deploy
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ matrix.environment == 'prod' && 'githubaction-prod' || matrix.environment == 'non-prod' && 'githubaction-testing' || 'githubaction-dev' }}
+          publish-profile: ${{ matrix.environment == 'prod' && secrets.PROD || matrix.environment == 'non-prod' && secrets.NONPROD || secrets.DEV }}
+          package: .
