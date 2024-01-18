@@ -5,10 +5,10 @@ on:
   push:
     branches:
       - app-service-deployment
-  workflow_run:
-    workflows: ["Deploy to Azure App Service"]
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ["Deploy to Azure App Service"]
+  #   types:
+  #     - completed
 
 
 jobs:
