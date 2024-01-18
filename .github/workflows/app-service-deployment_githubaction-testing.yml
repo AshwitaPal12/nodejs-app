@@ -1,247 +1,218 @@
-name: Deploy to Azure App Service
+# name: Deploy to Azure App Service
 
-on:
-  push: 
-    branches: 
-      - app-service-deployment
+# on:
+#   push:
+#     branches:
+#       - app-service-deployment
+#   # workflow_run:
+#   #   workflows: ["Deploy to Azure App Service"]
+#   #   types:
+#   #     - completed
 
-jobs: 
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Source
-        uses: actions/checkout@v3
-      - name: Setup Node.js version
-        uses: actions/setup-node@v4
-        with: 
-          node-version: '18.x'
-      - name: Install Dependencies
-        run: npm install
-      - name: Deploy to Azure App Service
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: githubaction-testing
-          publish-profile: ${{ secrets.TEST }}
-          package: .        
+# jobs:
+#   build-and-deploy-dev:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Source
+#         uses: actions/checkout@v3
+#       - name: Setup Node.js version
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '18.x'
+#       - name: Install Dependencies
+#         run: npm install
+#       - name: Deploy to Azure App Service (Dev)
+#         uses: azure/webapps-deploy@v2
+#         with:
+#           app-name: githubaction-dev
+#           publish-profile: ${{ secrets.DEV }}
+#           package: .
 
+#   build-and-deploy-prod:
+#     runs-on: ubuntu-latest
+#     needs: approval-prod
+#     steps:
+#       - name: Checkout Source
+#         uses: actions/checkout@v3
+#       - name: Setup Node.js version
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '18.x'
+#       - name: Install Dependencies
+#         run: npm install
+#       - name: Deploy to Azure App Service (Prod)
+#         uses: azure/webapps-deploy@v2
+#         with:
+#           app-name: githubaction-prod
+#           publish-profile: ${{ secrets.PROD }}
+#           package: .
 
+#   build-and-deploy-non-prod:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Source
+#         uses: actions/checkout@v3
+#       - name: Setup Node.js version
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '18.x'
+#       - name: Install Dependencies
+#         run: npm install
+#       - name: Deploy to Azure App Service (NON-PROD)
+#         uses: azure/webapps-deploy@v2
+#         with:
+#           app-name: githubaction-non-prod
+#           publish-profile: ${{ secrets.NON-PROD }}
+#           package: .
 
-
-name: Deploy to Azure App Service
-
-on:
-  push:
-    branches:
-      - app-service-deployment
-  workflow_run:
-    workflows: ["Deploy to Azure App Service"]
-    types:
-      - completed
-
-jobs:
-  build-and-deploy-dev:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Source
-        uses: actions/checkout@v3
-      - name: Setup Node.js version
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18.x'
-      - name: Install Dependencies
-        run: npm install
-      - name: Deploy to Azure App Service (Dev)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: githubaction-dev
-          publish-profile: ${{ secrets.DEV }}
-          package: .
-
-  build-and-deploy-prod:
-    runs-on: ubuntu-latest
-    needs: approval-prod
-    steps:
-      - name: Checkout Source
-        uses: actions/checkout@v3
-      - name: Setup Node.js version
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18.x'
-      - name: Install Dependencies
-        run: npm install
-      - name: Deploy to Azure App Service (Prod)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: githubaction-prod
-          publish-profile: ${{ secrets.PROD }}
-          package: .
-
-  build-and-deploy-non-prod:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Source
-        uses: actions/checkout@v3
-      - name: Setup Node.js version
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18.x'
-      - name: Install Dependencies
-        run: npm install
-      - name: Deploy to Azure App Service (NON-PROD)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: githubaction-non-prod
-          publish-profile: ${{ secrets.NON-PROD }}
-          package: .
-
-  approval-prod:
-    runs-on: ubuntu-latest
-    outputs:
-      time: ${{ steps.set-time.outputs.time }}
-    steps:
-      - name: Set approval time
-        id: set-time
-        run: echo "::set-output name=time::$(date +%s)"
-      - name: Wait for approval
-        id: approval
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const approvalTime = new Date('${{ needs.approval-prod.outputs.time }}' * 1000);
-            const currentTime = new Date();
-            const minutesDiff = (currentTime - approvalTime) / (1000 * 60);
+#   approval-prod:
+#     runs-on: ubuntu-latest
+#     outputs:
+#       time: ${{ steps.set-time.outputs.time }}
+#     steps:
+#       - name: Set approval time
+#         id: set-time
+#         run: echo "::set-output name=time::$(date +%s)"
+#       - name: Wait for approval
+#         id: approval
+#         uses: actions/github-script@v7
+#         with:
+#           script: |
+#             const approvalTime = new Date('${{ needs.approval-prod.outputs.time }}' * 1000);
+#             const currentTime = new Date();
+#             const minutesDiff = (currentTime - approvalTime) / (1000 * 60);
             
-            if (minutesDiff > 10) {  // Adjust the time limit as needed
-              core.setFailed('Approval timeout');
-            }
-      - name: Notify on Google Chat
-        if: success()
-        uses: enytc/github-action-google-chat-message@v2
-        with:
-          message: "Deployment to production environment approved and completed successfully."
+#             if (minutesDiff > 10) {  // Adjust the time limit as needed
+#               core.setFailed('Approval timeout');
+#             }
+#       - name: Notify on Google Chat
+#         if: success()
+#         uses: enytc/github-action-google-chat-message@v2
+#         with:
+#           message: "Deployment to production environment approved and completed successfully."
 
-# Add the following section at the end of the workflow
-jobs:
-  notification:
-    runs-on: ubuntu-latest
-    needs: build-and-deploy-prod
-    steps:
-      - name: Notify on Google Chat
-        if: success()
-        uses: enytc/github-action-google-chat-message@v2
-        with:
-          message: "Deployment to production environment has been initiated. Please review and approve on GitHub."
-
-
+# # Add the following section at the end of the workflow
+# jobs:
+#   notification:
+#     runs-on: ubuntu-latest
+#     needs: build-and-deploy-prod
+#     steps:
+#       - name: Notify on Google Chat
+#         if: success()
+#         uses: enytc/github-action-google-chat-message@v2
+#         with:
+#           message: "Deployment to production environment has been initiated. Please review and approve on GitHub."
 
 
 
 
-name: Deploy to Azure App Service
 
-on:
-  push:
-    branches:
-      - app-service-deployment
-  workflow_run:
-    workflows: ["Deploy to Azure App Service"]
-    types:
-      - completed
 
-jobs:
-  build-and-deploy-dev:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
-    steps:
-      - name: Checkout Source
-        uses: actions/checkout@v3
-      - name: Setup Node.js version
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18.x'
-      - name: Install Dependencies
-        run: npm install
-      - name: Deploy to Azure App Service (Dev)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: githubaction-dev
-          publish-profile: ${{ secrets.DEV }}
-          package: .
+# name: Deploy to Azure App Service
 
-  build-and-deploy-prod:
-    runs-on: ubuntu-latest
-    needs: approval-prod
-    if: github.event_name == 'push' && github.ref == 'refs/heads/prod'
-    steps:
-      - name: Checkout Source
-        uses: actions/checkout@v3
-      - name: Setup Node.js version
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18.x'
-      - name: Install Dependencies
-        run: npm install
-      - name: Deploy to Azure App Service (Prod)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: githubaction-prod
-          publish-profile: ${{ secrets.PROD }}
-          package: .
+# on:
+#   push:
+#     branches:
+#       - app-service-deployment
+#   workflow_run:
+#     workflows: ["Deploy to Azure App Service"]
+#     types:
+#       - completed
 
-  build-and-deploy-non-prod:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/non-pod'
-    steps:
-      - name: Checkout Source
-        uses: actions/checkout@v3
-      - name: Setup Node.js version
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18.x'
-      - name: Install Dependencies
-        run: npm install
-      - name: Deploy to Azure App Service (NON-PROD)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: githubaction-non-prod
-          publish-profile: ${{ secrets.NON-PROD }}
-          package: .
+# jobs:
+#   build-and-deploy-dev:
+#     runs-on: ubuntu-latest
+#     if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+#     steps:
+#       - name: Checkout Source
+#         uses: actions/checkout@v3
+#       - name: Setup Node.js version
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '18.x'
+#       - name: Install Dependencies
+#         run: npm install
+#       - name: Deploy to Azure App Service (Dev)
+#         uses: azure/webapps-deploy@v2
+#         with:
+#           app-name: githubaction-dev
+#           publish-profile: ${{ secrets.DEV }}
+#           package: .
 
-  approval-prod:
-    runs-on: ubuntu-latest
-    outputs:
-      time: ${{ steps.set-time.outputs.time }}
-    if: github.event_name == 'workflow_run' && github.event.workflow == 'Deploy to Azure App Service' && github.event.workflow_run.conclusion == 'success'
-    steps:
-      - name: Set approval time
-        id: set-time
-        run: echo "::set-output name=time::$(date +%s)"
-      - name: Wait for approval
-        id: approval
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const approvalTime = new Date('${{ needs.approval-prod.outputs.time }}' * 1000);
-            const currentTime = new Date();
-            const minutesDiff = (currentTime - approvalTime) / (1000 * 60);
+#   build-and-deploy-prod:
+#     runs-on: ubuntu-latest
+#     needs: approval-prod
+#     if: github.event_name == 'push' && github.ref == 'refs/heads/prod'
+#     steps:
+#       - name: Checkout Source
+#         uses: actions/checkout@v3
+#       - name: Setup Node.js version
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '18.x'
+#       - name: Install Dependencies
+#         run: npm install
+#       - name: Deploy to Azure App Service (Prod)
+#         uses: azure/webapps-deploy@v2
+#         with:
+#           app-name: githubaction-prod
+#           publish-profile: ${{ secrets.PROD }}
+#           package: .
+
+#   build-and-deploy-non-prod:
+#     runs-on: ubuntu-latest
+#     if: github.event_name == 'push' && github.ref == 'refs/heads/non-pod'
+#     steps:
+#       - name: Checkout Source
+#         uses: actions/checkout@v3
+#       - name: Setup Node.js version
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '18.x'
+#       - name: Install Dependencies
+#         run: npm install
+#       - name: Deploy to Azure App Service (NON-PROD)
+#         uses: azure/webapps-deploy@v2
+#         with:
+#           app-name: githubaction-non-prod
+#           publish-profile: ${{ secrets.NON-PROD }}
+#           package: .
+
+#   approval-prod:
+#     runs-on: ubuntu-latest
+#     outputs:
+#       time: ${{ steps.set-time.outputs.time }}
+#     if: github.event_name == 'workflow_run' && github.event.workflow == 'Deploy to Azure App Service' && github.event.workflow_run.conclusion == 'success'
+#     steps:
+#       - name: Set approval time
+#         id: set-time
+#         run: echo "::set-output name=time::$(date +%s)"
+#       - name: Wait for approval
+#         id: approval
+#         uses: actions/github-script@v7
+#         with:
+#           script: |
+#             const approvalTime = new Date('${{ needs.approval-prod.outputs.time }}' * 1000);
+#             const currentTime = new Date();
+#             const minutesDiff = (currentTime - approvalTime) / (1000 * 60);
             
-            if (minutesDiff > 10) {  // Adjust the time limit as needed
-              core.setFailed('Approval timeout');
-            }
-      - name: Notify on Google Chat
-        if: success()
-        uses: enytc/github-action-google-chat-message@v2
-        with:
-          message: "Deployment to production environment approved and completed successfully."
+#             if (minutesDiff > 10) {  // Adjust the time limit as needed
+#               core.setFailed('Approval timeout');
+#             }
+#       - name: Notify on Google Chat
+#         if: success()
+#         uses: enytc/github-action-google-chat-message@v2
+#         with:
+#           message: "Deployment to production environment approved and completed successfully."
 
-jobs:
-  notification:
-    runs-on: ubuntu-latest
-    needs: build-and-deploy-prod
-    if: github.event_name == 'workflow_run' && github.event.workflow == 'Deploy to Azure App Service' && github.event.workflow_run.conclusion == 'success'
-    steps:
-      - name: Notify on Google Chat
-        if: success()
-        uses: enytc/github-action-google-chat-message@v2
-        with:
-          message: "Deployment to production environment has been initiated. Please review and approve on GitHub."
+# jobs:
+#   notification:
+#     runs-on: ubuntu-latest
+#     needs: build-and-deploy-prod
+#     if: github.event_name == 'workflow_run' && github.event.workflow == 'Deploy to Azure App Service' && github.event.workflow_run.conclusion == 'success'
+#     steps:
+#       - name: Notify on Google Chat
+#         if: success()
+#         uses: enytc/github-action-google-chat-message@v2
+#         with:
+#           message: "Deployment to production environment has been initiated. Please review and approve on GitHub."

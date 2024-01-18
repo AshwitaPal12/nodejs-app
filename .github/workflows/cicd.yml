@@ -1,3 +1,77 @@
+# name: Deploy to Azure App Service
+
+# on:
+#   push:
+#     branches:
+#       - app-service-deployment
+
+# jobs:
+
+# #for DEV environment
+#   build-and-deploy-dev:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Source
+#         uses: actions/checkout@v3
+#       - name: Setup Node.js version
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '18.x'
+#       - name: Install Dependencies
+#         run: npm install
+#       - name: Deploy to Azure App Service (Dev)
+#         uses: azure/webapps-deploy@v2
+#         with:
+#           app-name: githubaction-dev
+#           publish-profile: ${{ secrets.DEV }}
+#           package: .
+
+# #for PROD environment
+#   build-and-deploy-prod:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Source
+#         uses: actions/checkout@v3
+#       - name: Setup Node.js version
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '18.x'
+#       - name: Install Dependencies
+#         run: npm install
+#       - name: Deploy to Azure App Service (Prod)
+#         uses: azure/webapps-deploy@v2
+#         with:
+#           app-name: githubaction-prod
+#           publish-profile: ${{ secrets.PROD }}
+#           package: .
+
+# #for non-prod environment
+#   build-and-deploy-non-prod:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Source
+#         uses: actions/checkout@v3
+#       - name: Setup Node.js version
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '18.x'
+#       - name: Install Dependencies
+#         run: npm install
+#       - name: Deploy to Azure App Service (NON-PROD)
+#         uses: azure/webapps-deploy@v2
+#         with:
+#           app-name: githubaction-testing
+#           publish-profile: ${{ secrets.NONPROD }}
+#           package: .
+
+
+
+
+
+
+
+
+
 name: Deploy to Azure App Service
 
 on:
@@ -7,9 +81,12 @@ on:
 
 jobs:
 
-#for DEV environment
-  build-and-deploy-dev:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [prod, non-prod, dev]
+
     steps:
       - name: Checkout Source
         uses: actions/checkout@v3
@@ -19,47 +96,18 @@ jobs:
           node-version: '18.x'
       - name: Install Dependencies
         run: npm install
-      - name: Deploy to Azure App Service (Dev)
+      - name: Deploy to Azure App Service
+        id: deploy
         uses: azure/webapps-deploy@v2
         with:
-          app-name: githubaction-dev
-          publish-profile: ${{ secrets.DEV }}
+          app-name: ${{ matrix.environment == 'prod' && 'githubaction-prod' || matrix.environment == 'non-prod' && 'githubaction-testing' || 'githubaction-dev' }}
+          publish-profile: ${{ matrix.environment == 'prod' && secrets.PROD || matrix.environment == 'non-prod' && secrets.NONPROD || secrets.DEV }}
           package: .
 
-#for PROD environment
-  build-and-deploy-prod:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Source
-        uses: actions/checkout@v3
-      - name: Setup Node.js version
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18.x'
-      - name: Install Dependencies
-        run: npm install
-      - name: Deploy to Azure App Service (Prod)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: githubaction-prod
-          publish-profile: ${{ secrets.PROD }}
-          package: .
+#       - name: Notify on Google Chat
+#         if: success() && matrix.environment == 'prod'
+#         uses: enytc/github-action-google-chat-message@v2
+#         with:
+#           message: "Deployment to production environment approved and completed successfully."
 
-#for non-prod environment
-  build-and-deploy-non-prod:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Source
-        uses: actions/checkout@v3
-      - name: Setup Node.js version
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18.x'
-      - name: Install Dependencies
-        run: npm install
-      - name: Deploy to Azure App Service (NON-PROD)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: githubaction-testing
-          publish-profile: ${{ secrets.NONPROD }}
-          package: .
+# # Note: You can add more steps as needed for additional configurations or notifications.
