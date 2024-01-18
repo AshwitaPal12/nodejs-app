@@ -1,13 +1,17 @@
 name: Deploy to Azure App Service
 
+
 on:
   push:
     branches:
       - app-service-deployment
+  workflow_run:
+    workflows: ["Deploy to Azure App Service"]
+    types:
+      - completed
+
 
 jobs:
-
-#for DEV environment
   build-and-deploy-dev:
     runs-on: ubuntu-latest
     steps:
@@ -26,9 +30,10 @@ jobs:
           publish-profile: ${{ secrets.DEV }}
           package: .
 
-#for PROD environment
+
   build-and-deploy-prod:
     runs-on: ubuntu-latest
+    needs: approval-prod
     steps:
       - name: Checkout Source
         uses: actions/checkout@v3
@@ -45,7 +50,7 @@ jobs:
           publish-profile: ${{ secrets.PROD }}
           package: .
 
-#for non-prod environment
+
   build-and-deploy-non-prod:
     runs-on: ubuntu-latest
     steps:
@@ -60,6 +65,46 @@ jobs:
       - name: Deploy to Azure App Service (NON-PROD)
         uses: azure/webapps-deploy@v2
         with:
-          app-name: githubaction-testing
-          publish-profile: ${{ secrets.NONPROD }}
+          app-name: githubaction-non-prod
+          publish-profile: ${{ secrets.NON-PROD }}
           package: .
+
+
+  approval-prod:
+    runs-on: ubuntu-latest
+    outputs:
+      time: ${{ steps.set-time.outputs.time }}
+    steps:
+      - name: Set approval time
+        id: set-time
+        run: echo "::set-output name=time::$(date +%s)"
+      - name: Wait for approval
+        id: approval
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const approvalTime = new Date('${{ needs.approval-prod.outputs.time }}' * 1000);
+            const currentTime = new Date();
+            const minutesDiff = (currentTime - approvalTime) / (1000 * 60);
+          
+            if (minutesDiff > 10) {  // Adjust the time limit as needed
+              core.setFailed('Approval timeout');
+            }
+      - name: Notify on Google Chat
+        if: success()
+        uses: enytc/github-action-google-chat-message@v2
+        with:
+          message: "Deployment to production environment approved and completed successfully."
+
+
+# Add the following section at the end of the workflow
+jobs:
+  notification:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy-prod
+    steps:
+      - name: Notify on Google Chat
+        if: success()
+        uses: enytc/github-action-google-chat-message@v2
+        with:
+          message: "Deployment to production environment has been initiated. Please review and approve on GitHub."
