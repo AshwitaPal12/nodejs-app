@@ -46,7 +46,7 @@ jobs:
           curl -X POST -H 'Content-Type: application/json' \
           -d '{
             "text": "'"$MESSAGE"'"
-          }' "https://chat.googleapis.com/v1/spaces/${GOOGLE_CHAT_ROOM}/messages?key=${{ secrets.APPROVAL }}"
+          }' "${{ secrets.APPROVAL }}"
 
       - name: Wait for approval
         id: approval
