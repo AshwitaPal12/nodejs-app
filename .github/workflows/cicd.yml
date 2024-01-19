@@ -41,7 +41,7 @@ jobs:
         run: |
           # You need to replace the following placeholders with your actual Google Chat room and message
           GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
-          MESSAGE="Deployment approval request. Click [here](https://github.com/AshwitaPal12/nodejs-app/actions/workflows) to approve."
+          MESSAGE="Deployment approval request. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) to approve."
 
           curl -X POST -H 'Content-Type: application/json' \
           -d '{
