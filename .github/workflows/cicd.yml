@@ -46,7 +46,7 @@ jobs:
           curl -X POST -H 'Content-Type: application/json' \
           -d '{
             "text": "'"$MESSAGE"'"
-          }' "${{ secrets.APPROVAL }}"
+          }' "${{ secrets.PROAPPROVAL }}"
 
       - name: Wait for approval
         id: approval
