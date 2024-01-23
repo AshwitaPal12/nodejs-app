@@ -1,92 +1,3 @@
-# name: Deploy to Azure App Service1
-
-# on:
-#   push:
-#     branches:
-#       - app-service-deployment
-#   workflow_run:
-#     workflows: ["Deploy to Azure App Service"]
-#     types:
-#       - completed
-
-# jobs:
-#   build-and-deploy-prod:
-#     runs-on: ubuntu-latest
-#     needs: approval-prod
-#     outputs:
-#       time: ${{ steps.set-time.outputs.time }}
-#     steps:
-#       - name: Checkout Source
-#         uses: actions/checkout@v3
-#       - name: Setup Node.js version
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: '18.x'
-#       - name: Install Dependencies
-#         run: npm install
-#       - name: Deploy to Azure App Service (Prod)
-#         uses: azure/webapps-deploy@v2
-#         with:
-#           app-name: githubaction-testing
-#           publish-profile: ${{ secrets.TEST }}
-#           package: .
-
-#   approval-prod:
-#     needs: build 
-#     name: Deploy to staging
-#     environment: 
-#       name: staging
-#       url: ${{ steps.approval-prod.output.webapp-url}}
-#     runs-on: ubuntu-latest
-#     outputs:
-#       time: ${{ needs.build-and-deploy-prod.outputs.time }}
-#     steps:
-#       - name: Send Approval Request
-#         id: send-approval
-#         run: |
-#           # You need to replace the following placeholders with your actual Google Chat room and message
-#           GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
-#           MESSAGE="Deployment approval request. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) to approve."
-
-#           curl -X POST -H 'Content-Type: application/json' \
-#           -d '{
-#             "text": "'"$MESSAGE"'"
-#           }' "${{ secrets.APPROVAL }}"
-
-#       - name: Wait for approval
-#         id: approval
-#         uses: actions/github-script@v7
-#         with:
-#           script: |
-#             const approvalTime = new Date('${{ needs.approval-prod.outputs.time }}' * 1000);
-#             const currentTime = new Date();
-#             const minutesDiff = (currentTime - approvalTime) / (1000 * 60);
-          
-#             if (minutesDiff > 10) {  // Adjust the time limit as needed
-#               core.setFailed('Approval timeout');
-#             }
-#           app-name: githubaction-testing
-#           publish-profile: ${{ secrets.TEST }}  
-
-#   notification:
-#     runs-on: ubuntu-latest
-#     needs: build-and-deploy-prod
-#     steps:
-#       - name: Notify on Google Chat
-#         if: success()
-#         uses: enytc/github-action-google-chat-message@v2
-#         with:
-#           message: "Deployment to production environment has been initiated. Please review and approve on GitHub."
-
-
-
-
-
-
-
-
-
-
 name: Deploy to Azure App Service1
 
 on:
@@ -99,22 +10,11 @@ on:
       - completed
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    outputs:
-      time: ${{ steps.set-time.outputs.time }}
-    steps:
-      - name: Checkout Source
-        uses: actions/checkout@v3
-      - name: Set approval time
-        id: set-time
-        run: echo "::set-output name=time::$(date +%s)"
-
   build-and-deploy-prod:
     runs-on: ubuntu-latest
     needs: approval-prod
     outputs:
-      time: ${{ needs.build.outputs.time }}
+      time: ${{ steps.set-time.outputs.time }}
     steps:
       - name: Checkout Source
         uses: actions/checkout@v3
@@ -133,13 +33,9 @@ jobs:
 
   approval-prod:
     needs: build 
-    name: Deploy to staging
-    environment: 
-      name: staging
-      url: ${{ steps.approval-prod.output.webapp-url}}
     runs-on: ubuntu-latest
     outputs:
-      time: ${{ needs.build.outputs.time }}
+      time: ${{ needs.build-and-deploy-prod.outputs.time }}
     steps:
       - name: Send Approval Request
         id: send-approval
@@ -165,7 +61,6 @@ jobs:
             if (minutesDiff > 10) {  // Adjust the time limit as needed
               core.setFailed('Approval timeout');
             }
-
   notification:
     runs-on: ubuntu-latest
     needs: build-and-deploy-prod
