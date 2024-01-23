@@ -32,6 +32,11 @@ jobs:
           package: .
 
   approval-prod:
+    needs: build 
+    name: Deploy to staging
+    environment: 
+      name: staging
+      url: ${{ steps.approval-prod.output.webapp-url}}
     runs-on: ubuntu-latest
     outputs:
       time: ${{ needs.build-and-deploy-prod.outputs.time }}
@@ -60,6 +65,8 @@ jobs:
             if (minutesDiff > 10) {  // Adjust the time limit as needed
               core.setFailed('Approval timeout');
             }
+          app-name: githubaction-testing
+          publish-profile: ${{ secrets.TEST }}  
 
   notification:
     runs-on: ubuntu-latest
