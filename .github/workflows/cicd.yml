@@ -128,7 +128,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: githubaction-production
-          publish-profile: ${{ secrets.APPROVAL }}
+          publish-profile: ${{ secrets.TEST }}
           package: .
 
   approval-prod:
