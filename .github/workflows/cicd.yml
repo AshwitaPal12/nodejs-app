@@ -53,7 +53,7 @@ jobs:
             const currentTime = new Date();
             const minutesDiff = (currentTime - approvalTime) / (1000 * 60);
           
-            if (minutesDiff > 10) {  // Adjust the time limit as needed
+            if (minutesDiff > 20) {  // Adjust the time limit as needed
               core.setFailed('Approval timeout');
             }
 
