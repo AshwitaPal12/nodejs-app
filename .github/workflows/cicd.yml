@@ -9,7 +9,7 @@ jobs:
   build-and-deploy-prod:
     runs-on: ubuntu-latest
     environment: 
-      name: APPROVAL
+      name: production
       url: 'githubaction-testing.azurewebsites.net'
     outputs:
       time: ${{ steps.set-time.outputs.time }}
