@@ -37,7 +37,7 @@ jobs:
         if: success()
         run: |
          GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
-         MESSAGE="Deployment approval is done. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) to approve."
+         MESSAGE="Deployment approval is done. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
 
 
          curl -X POST -H 'Content-Type: application/json' \
