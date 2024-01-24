@@ -38,4 +38,4 @@ jobs:
         uses: AshwitaPal12/nodejs-app
         with:
           message: "Deployment to production environment has been done on GitHub."
-          webhookUrl: '${{ secrets.APPROVAL }}'
+          webhookUrl: '${{ secrets.APPROVAL }}'          
