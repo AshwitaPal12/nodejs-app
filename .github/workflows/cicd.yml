@@ -8,7 +8,9 @@ on:
 jobs:
   build-and-deploy-prod:
     runs-on: ubuntu-latest
-    needs: approval-prod
+    environment: 
+      name: APPROVAL
+      url: 'githubaction-testing.azurewebsites.net'
     outputs:
       time: ${{ steps.set-time.outputs.time }}
     steps:
@@ -27,45 +29,47 @@ jobs:
           publish-profile: ${{ secrets.TEST }}
           package: .
 
-  approval-prod:
-    runs-on: ubuntu-latest
-    environment: 
-      name: APPROVAL
-      url: 'githubaction-testing.azurewebsites.net'
-    outputs:
-      time: ${{ needs.build-and-deploy-prod.outputs.time }}
-    steps:
-      - name: Send Approval Request
-        id: send-approval
-        run: |
-          # You need to replace the following placeholders with your actual Google Chat room and message
-          GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
-          MESSAGE="Deployment approval request. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) to approve."
 
-          curl -X POST -H 'Content-Type: application/json' \
-          -d '{
-            "text": "'"$MESSAGE"'"
-          }' "${{ secrets.APPROVAL }}"
 
-      - name: Wait for approval
-        id: approval
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const approvalTime = new Date('${{ needs.approval-prod.outputs.time }}' * 1000);
-            const currentTime = new Date();
-            const minutesDiff = (currentTime - approvalTime) / (1000 * 60);
+  # approval-prod:
+  #   runs-on: ubuntu-latest
+  #   environment: 
+  #     name: APPROVAL
+  #     url: 'githubaction-testing.azurewebsites.net'
+  #   outputs:
+  #     time: ${{ needs.build-and-deploy-prod.outputs.time }}
+  #   steps:
+  #     - name: Send Approval Request
+  #       id: send-approval
+  #       run: |
+  #         # You need to replace the following placeholders with your actual Google Chat room and message
+  #         GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
+  #         MESSAGE="Deployment approval request. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) to approve."
+
+  #         curl -X POST -H 'Content-Type: application/json' \
+  #         -d '{
+  #           "text": "'"$MESSAGE"'"
+  #         }' "${{ secrets.APPROVAL }}"
+
+  #     - name: Wait for approval
+  #       id: approval
+  #       uses: actions/github-script@v7
+  #       with:
+  #         script: |
+  #           const approvalTime = new Date('${{ needs.approval-prod.outputs.time }}' * 1000);
+  #           const currentTime = new Date();
+  #           const minutesDiff = (currentTime - approvalTime) / (1000 * 60);
           
-            if (minutesDiff > 20) {  // Adjust the time limit as needed
-              core.setFailed('Approval timeout');
-            }
+  #           if (minutesDiff > 20) {  // Adjust the time limit as needed
+  #             core.setFailed('Approval timeout');
+  #           }
 
-  notification:
-    runs-on: ubuntu-latest
-    needs: build-and-deploy-prod
-    steps:
-      - name: Notify on Google Chat
-        if: success()
-        uses: enytc/github-action-google-chat-message@v2
-        with:
-          message: "Deployment to production environment has been initiated. Please review and approve on GitHub."
+  # notification:
+  #   runs-on: ubuntu-latest
+  #   needs: build-and-deploy-prod
+  #   steps:
+  #     - name: Notify on Google Chat
+  #       if: success()
+  #       uses: enytc/github-action-google-chat-message@v2
+  #       with:
+  #         message: "Deployment to production environment has been initiated. Please review and approve on GitHub."
