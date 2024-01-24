@@ -29,6 +29,9 @@ jobs:
 
   approval-prod:
     runs-on: ubuntu-latest
+    environment: 
+      name: APPROVAL
+      url: 'githubaction-testing.azurewebsites.net'
     outputs:
       time: ${{ needs.build-and-deploy-prod.outputs.time }}
     steps:
@@ -42,7 +45,7 @@ jobs:
           curl -X POST -H 'Content-Type: application/json' \
           -d '{
             "text": "'"$MESSAGE"'"
-          }' "${{ secrets.PROAPPROVAL }}"
+          }' "${{ secrets.APPROVAL }}"
 
       - name: Wait for approval
         id: approval
