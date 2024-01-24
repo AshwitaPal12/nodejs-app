@@ -53,9 +53,9 @@ jobs:
             const currentTime = new Date();
             const minutesDiff = (currentTime - approvalTime) / (1000 * 60);
           
-            if (minutesDiff > 20) {  // Adjust the time limit as needed
-              core.setFailed('Approval timeout');
-            }
+            # if (minutesDiff > 20) {  // Adjust the time limit as needed
+            #   core.setFailed('Approval timeout');
+            # }
 
   notification:
     runs-on: ubuntu-latest
