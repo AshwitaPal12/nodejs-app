@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Notify on Google Chat
         if: success()
-        uses: AshwitaPal12/nodejs-app@v2
+        uses: AshwitaPal12/nodejs-app
         with:
           message: "Deployment to production environment has been done on GitHub."
           webhookUrl: '${{ secrets.APPROVAL }}'
