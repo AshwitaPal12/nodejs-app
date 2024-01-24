@@ -64,12 +64,12 @@ jobs:
   #             core.setFailed('Approval timeout');
   #           }
 
-  # notification:
-  #   runs-on: ubuntu-latest
-  #   needs: build-and-deploy-prod
-  #   steps:
-  #     - name: Notify on Google Chat
-  #       if: success()
-  #       uses: enytc/github-action-google-chat-message@v2
-  #       with:
-  #         message: "Deployment to production environment has been initiated. Please review and approve on GitHub."
+  notification:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy-prod
+    steps:
+      - name: Notify on Google Chat
+        if: success()
+        uses: enytc/github-action-google-chat-message@v2
+        with:
+          message: "Deployment to production environment has been initiated. Please review and approve on GitHub."
