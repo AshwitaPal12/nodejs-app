@@ -35,7 +35,12 @@ jobs:
     steps:
       - name: Notify on Google Chat
         if: success()
-        uses: AshwitaPal12/nodejs-app
-        with:
-          message: "Deployment to production environment has been done on GitHub."
-          webhookUrl: '${{ secrets.PROAPPROVAL }}'          
+        run: |
+         GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
+         MESSAGE="Deployment approval is done. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) to approve."
+
+
+         curl -X POST -H 'Content-Type: application/json' \
+         -d '{
+           "text": "'"$MESSAGE"'"
+         }' "${{ secrets.PROAPPROVAL }}"
