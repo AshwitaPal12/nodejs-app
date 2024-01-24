@@ -72,4 +72,5 @@ jobs:
         if: success()
         uses: enytc/github-action-google-chat-message@v2
         with:
-          message: "Deployment to production environment has been initiated. Please review and approve on GitHub."
+          message: "Deployment to production environment has been done on GitHub."
+          publish-profile: ${{ secrets.APPROVAL }}
