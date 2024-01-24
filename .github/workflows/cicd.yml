@@ -1,4 +1,4 @@
-name: Deploy to Azure App Service1
+name: Deploy to Azure App Service
 
 on:
   push:
@@ -38,4 +38,4 @@ jobs:
         uses: AshwitaPal12/nodejs-app
         with:
           message: "Deployment to production environment has been done on GitHub."
-          webhookUrl: '${{ secrets.APPROVAL }}'          
+          webhookUrl: '${{ secrets.PROAPPROVAL }}'          
