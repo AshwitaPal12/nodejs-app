@@ -81,7 +81,7 @@ jobs:
          curl -X POST -H 'Content-Type: application/json' \
          -d '{
            "text": "'"$MESSAGE"'"
-         }' "${{ secrets.APPROVAL }}"
+         }' "${{ secrets.PROAPPROVAL }}"
 
   notify-after-deploy:
     runs-on: ubuntu-latest
@@ -94,7 +94,7 @@ jobs:
          curl -X POST -H 'Content-Type: application/json' \
           -d '{
            "text": "'"$MESSAGE"'"
-         }' "${{ secrets.APPROVAL }}"
+         }' "${{ secrets.PROAPPROVAL }}"
 
 
   
