@@ -7,9 +7,25 @@ on:
 
 jobs:
 
+  notification:
+    runs-on: ubuntu-latest
+    # needs: build-and-deploy-prod
+    steps:
+      - name: Notify on Google Chat
+        if: success()
+        run: |
+         GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
+         MESSAGE="Deployment approval is done. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+
+
+         curl -X POST -H 'Content-Type: application/json' \
+         -d '{
+           "text": "'"$MESSAGE"'"
+         }' "${{ secrets.APPROVAL }}"
+
   build-and-deploy-prod:
     runs-on: ubuntu-latest
-    needs: notification
+    # needs: notification
     environment: 
       name: prodution
       url: 'githubaction-testing.azurewebsites.net'
@@ -31,21 +47,21 @@ jobs:
           publish-profile: ${{ secrets.TEST }}
           package: .
 
-  notification:
-    runs-on: ubuntu-latest
-    needs: build-and-deploy-prod
-    steps:
-      - name: Notify on Google Chat
-        if: success()
-        run: |
-         GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
-         MESSAGE="Deployment approval is done. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+  # notification:
+  #   runs-on: ubuntu-latest
+  #   needs: build-and-deploy-prod
+  #   steps:
+  #     - name: Notify on Google Chat
+  #       if: success()
+  #       run: |
+  #        GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
+  #        MESSAGE="Deployment approval is done. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
 
 
-         curl -X POST -H 'Content-Type: application/json' \
-         -d '{
-           "text": "'"$MESSAGE"'"
-         }' "${{ secrets.APPROVAL }}"
+  #        curl -X POST -H 'Content-Type: application/json' \
+  #        -d '{
+  #          "text": "'"$MESSAGE"'"
+  #        }' "${{ secrets.APPROVAL }}"
 
 #for DEV environment
   build-and-deploy-dev:
