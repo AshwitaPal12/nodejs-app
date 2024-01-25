@@ -29,6 +29,7 @@ jobs:
 
   build-and-deploy-prod:
     runs-on: ubuntu-latest
+    needs: notification
     environment: 
       name: prodution
       url: 'githubaction-testing.azurewebsites.net'
@@ -64,7 +65,7 @@ jobs:
          curl -X POST -H 'Content-Type: application/json' \
          -d '{
            "text": "'"$MESSAGE"'"
-         }' "${{ secrets.PROAPPROVAL }}"
+         }' "${{ secrets.APPROVAL }}"
 
 #for non-prod environment
   build-and-deploy-non-prod:
@@ -85,8 +86,3 @@ jobs:
          app-name: githubaction-testing
          publish-profile: ${{ secrets.NONPROD }}
          package: .       
-
-
-
-# 
-# kfnvierhuihrev rueiviri rioehverwhriwen
