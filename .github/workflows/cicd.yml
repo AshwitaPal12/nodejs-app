@@ -85,3 +85,8 @@ jobs:
          app-name: githubaction-testing
          publish-profile: ${{ secrets.NONPROD }}
          package: .       
+
+
+
+# 
+# kfnvierhuihrev rueiviri rioehverwhriwen
