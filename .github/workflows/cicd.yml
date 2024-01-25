@@ -77,14 +77,11 @@ jobs:
     steps:
       - name: Notify on Google Chat 
         run: |
-         GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
          MESSAGE="Deployment approval request. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) to approve."
-
-
          curl -X POST -H 'Content-Type: application/json' \
          -d '{
            "text": "'"$MESSAGE"'"
-         }' "${{ secrets.PROAPPROVAL }}"
+         }' "${{ secrets.APPROVAL }}"
 
   notify-after-deploy:
     runs-on: ubuntu-latest
@@ -93,12 +90,11 @@ jobs:
       - name: Notify on Google Chat after deploy
         if: success()
         run: |
-         GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
          MESSAGE="Deployment and approval request is done."
          curl -X POST -H 'Content-Type: application/json' \
           -d '{
            "text": "'"$MESSAGE"'"
-         }' "${{ secrets.PROAPPROVAL }}"
+         }' "${{ secrets.APPROVAL }}"
 
 
   
