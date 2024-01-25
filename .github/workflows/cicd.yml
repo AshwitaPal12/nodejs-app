@@ -7,45 +7,6 @@ on:
 
 jobs:
 
-  build-and-deploy-prod:
-    runs-on: ubuntu-latest
-    needs: notification
-    environment: 
-      name: prodution
-      url: 'githubaction-testing.azurewebsites.net'
-    outputs:
-      time: ${{ steps.set-time.outputs.time }}
-    steps:
-      - name: Checkout Source
-        uses: actions/checkout@v3
-      - name: Setup Node.js version
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18.x'
-      - name: Install Dependencies
-        run: npm install
-      - name: Deploy to Azure App Service (Prod)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: githubaction-testing
-          publish-profile: ${{ secrets.TEST }}
-          package: .
-
-  notification:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Notify on Google Chat
-        if: success()
-        run: |
-         GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
-         MESSAGE="Deployment approval request. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) to approve."
-
-
-         curl -X POST -H 'Content-Type: application/json' \
-         -d '{
-           "text": "'"$MESSAGE"'"
-         }' "${{ secrets.PROAPPROVAL }}"
-
 #for DEV environment
   build-and-deploy-dev:
    if: github.event.ref == 'refs/heads/main'   
@@ -84,4 +45,63 @@ jobs:
        with:
          app-name: githubaction-testing
          publish-profile: ${{ secrets.NONPROD }}
-         package: .       
+         package: . 
+
+#for prod environment  
+  build-and-deploy-prod:
+    runs-on: ubuntu-latest
+    needs: notification
+    environment: 
+      name: prodution
+      url: 'githubaction-testing.azurewebsites.net'
+    outputs:
+      time: ${{ steps.set-time.outputs.time }}
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+      - name: Setup Node.js version
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+      - name: Install Dependencies
+        run: npm install
+      - name: Deploy to Azure App Service (Prod)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: githubaction-testing
+          publish-profile: ${{ secrets.TEST }}
+          package: .
+
+  notification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify on Google Chat 
+        run: |
+         GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
+         MESSAGE="Deployment approval request. Click [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) to approve."
+
+
+         curl -X POST -H 'Content-Type: application/json' \
+         -d '{
+           "text": "'"$MESSAGE"'"
+         }' "${{ secrets.APPROVAL }}"
+
+  notify-after-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify on Google Chat after deploy
+        if: success()
+        run: |
+         GOOGLE_CHAT_ROOM="xYO8qkAAAAE"
+         MESSAGE="Deployment and approval request is done."
+         curl -X POST -H 'Content-Type: application/json' \
+          -d '{
+           "text": "'"$MESSAGE"'"
+         }' "${{ secrets.APPROVAL }}"
+
+
+  
+
+
+
+      
