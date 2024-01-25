@@ -6,6 +6,27 @@ on:
       - app-service-deployment
 
 jobs:
+
+#for DEV environment
+  build-and-deploy-dev:
+   if: github.event.ref == 'refs/heads/main'   
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout Source
+       uses: actions/checkout@v3
+     - name: Setup Node.js version
+       uses: actions/setup-node@v4
+       with:
+         node-version: '18.x'
+     - name: Install Dependencies
+       run: npm install
+     - name: Deploy to Azure App Service (Dev)
+       uses: azure/webapps-deploy@v2
+       with:
+         app-name: githubaction-dev
+         publish-profile: ${{ secrets.DEV }}
+         package: .
+
   build-and-deploy-prod:
     runs-on: ubuntu-latest
     environment: 
@@ -44,3 +65,23 @@ jobs:
          -d '{
            "text": "'"$MESSAGE"'"
          }' "${{ secrets.PROAPPROVAL }}"
+
+#for non-prod environment
+  build-and-deploy-non-prod:
+   if: github.event.ref == 'refs/heads/main'   
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout Source
+       uses: actions/checkout@v3
+     - name: Setup Node.js version
+       uses: actions/setup-node@v4
+       with:
+         node-version: '18.x'
+     - name: Install Dependencies
+       run: npm install
+     - name: Deploy to Azure App Service (NON-PROD)
+       uses: azure/webapps-deploy@v2
+       with:
+         app-name: githubaction-testing
+         publish-profile: ${{ secrets.NONPROD }}
+         package: .       
