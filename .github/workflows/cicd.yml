@@ -54,8 +54,8 @@ jobs:
     environment: 
       name: prodution
       url: 'githubaction-testing.azurewebsites.net'
-    outputs:
-      time: ${{ steps.set-time.outputs.time }}
+    # outputs:
+    #   time: ${{ steps.set-time.outputs.time }}
     steps:
       - name: Checkout Source
         uses: actions/checkout@v3
@@ -81,7 +81,7 @@ jobs:
          curl -X POST -H 'Content-Type: application/json' \
          -d '{
            "text": "'"$MESSAGE"'"
-         }' "${{ secrets.PROAPPROVAL }}"
+         }' "${{ secrets.APPROVAL }}"
 
   notify-after-deploy:
     runs-on: ubuntu-latest
@@ -94,11 +94,4 @@ jobs:
          curl -X POST -H 'Content-Type: application/json' \
           -d '{
            "text": "'"$MESSAGE"'"
-         }' "${{ secrets.PROAPPROVAL }}"
-
-
-  
-
-
-
-      
+         }' "${{ secrets.APPROVAL }}"
